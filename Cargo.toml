@@ -1,0 +1,13 @@
+[package]
+name = "classifier"
+version = "0.0.1"
+authors = ["Jack Montgomery <jackm321@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+description = """
+Naive Bayes classifier
+"""
+
+
+keywords = ["naive-bayes", "bayesian", "classifier", "machine-learning"]
