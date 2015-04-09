@@ -1,8 +1,11 @@
 use std::collections::HashMap;
 use std::f64;
+use rustc_serialize::json;
+
 
 static DEFAULT_SMOOTHING: f64 = 1.0f64;
 
+#[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 pub struct Classifier {
     vocab: HashMap<String, u32>,
     num_examples: u32,
@@ -11,6 +14,7 @@ pub struct Classifier {
     classifications: HashMap<String, Classification>
 }
 
+#[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 struct Classification {
     label: String,
     num_examples: u32,
@@ -89,7 +93,6 @@ impl Classifier {
         
         for classification in self.classifications.values() {
             let score = classification.score_document(document, &self.vocab);
-            println!("score for {}: {:.12}", classification.label, score);
             if score > max_score {
                 max_classification = Some(classification);
                 max_score = score;
@@ -98,6 +101,18 @@ impl Classifier {
 
         max_classification.unwrap().label.clone()
     }
+
+    /// Encodes the classifier as a JSON string.
+    pub fn to_json(&self) -> String {
+        json::encode(self).ok().expect("encoding JSON failed")
+    }
+
+    /// Builds a new classifier from a JSON string
+    pub fn from_json(encoded: &str) -> Classifier {
+        let classifier: Classifier = json::decode(encoded).ok().expect("decoding JSON failed");
+        classifier
+    }
+
 }
 
 
@@ -125,13 +140,11 @@ impl Classification {
 
     fn train(&mut self, vocab: &HashMap<String, u32>, total_examples: u32, smoothing: f64) {
         self.probability = Some(self.num_examples as f64 / total_examples as f64);
-        println!("probability of {:?}: {:?}", self.label, self.probability );
         self.default_word_probability = Some(smoothing / (self.num_words as f64 + smoothing * vocab.len() as f64));
-        println!("default_word_probability of {:?}: {:?}", self.label, self.default_word_probability );
         
         for word in vocab.keys() {
             if self.words.contains_key(word) {
-                let mut word_entry = self.words.get_mut(word).unwrap();
+                let word_entry = self.words.get_mut(word).unwrap();
                 let word_count = word_entry.0;
                 let p_word_given_label = (word_count as f64 + smoothing) / (self.num_words as f64 + smoothing * vocab.len() as f64);
                 word_entry.1 = Some(p_word_given_label);
