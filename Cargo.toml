@@ -4,6 +4,7 @@ name = "classifier"
 version = "0.0.2"
 authors = ["Jack Montgomery <jackm321@gmail.com>"]
 repository = "https://github.com/jackm321/Rust_Classifier"
+documentation = "https://jackm321.github.io/Rust_Classifier/doc/classifier/"
 license = "Apache-2.0"
 readme = "README.md"
 
