@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 use std::f64;
+use regex::Regex;
 use rustc_serialize::json;
-
 
 static DEFAULT_SMOOTHING: f64 = 1.0f64;
 
 #[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
+/// Naive Bayes classifier
 pub struct Classifier {
     vocab: HashMap<String, u32>,
     num_examples: u32,
@@ -26,6 +27,7 @@ struct Classification {
 
 impl Classifier {
     
+    /// Creates a new classifier
     pub fn new() -> Classifier {
         Classifier {
             vocab: HashMap::new(),
@@ -36,7 +38,10 @@ impl Classifier {
         }
     }
 
-    pub fn add_document(&mut self, document: &Vec<String>, label: &String) {
+    /// Takes a document that has been tokenized into a vector of strings
+    /// and a label and adds the document to the list of documents that the
+    /// classifier is aware of and will train on next time the `train()` method is called
+    pub fn add_document_tokenized(&mut self, document: &Vec<String>, label: &String) {
         if document.len() == 0 { return; }
 
         self.num_examples += 1;
@@ -65,12 +70,36 @@ impl Classifier {
         classification.num_examples += 1;
     }
 
+    /// Takes a document and a label and tokenizes the document by
+    /// breaking on whitespace characters. The document is added to the list
+    /// of documents that the classifier is aware of and will train on next time the `train()` method is called 
+    pub fn add_document(&mut self, document: &String, label: &String) {
+        self.add_document_tokenized(&split_document(document), label);
+    }
+
+    
+    /// Adds a list of (document, label) tuples to the classifier
+    pub fn add_documents(&mut self, examples: &Vec<(String, String)>) {
+        for &(ref document, ref label) in examples.iter() {
+            self.add_document(document, label);
+        }
+    }
+
+    /// Adds a list of (tokenized document, label) tuples to the classifier
+    pub fn add_documents_tokenized(&mut self, examples: &Vec<(Vec<String>, String)>) {
+        for &(ref document, ref label) in examples.iter() {
+            self.add_document_tokenized(document, label);
+        }
+    }
+
+    /// Gets a vector of all of the labels that the classifier has seen so far
     pub fn get_labels(&self) -> Vec<String> {
         let labels: Vec<String> =
             self.classifications.values().map(|c| c.label.clone()).collect();
         labels
     }
 
+    /// Sets the [smoothing](http://en.wikipedia.org/wiki/Additive_smoothing) value (must be greater than 0.0)
     pub fn set_smoothing(&mut self, smoothing: f64) {
         if smoothing <= 0.0 {
             panic!("smoothing must be a positive number");
@@ -78,6 +107,7 @@ impl Classifier {
         self.smoothing = smoothing;
     }
 
+    /// Trains the classifier on the documents that have been observed so far
     pub fn train(&mut self) {
         for (_, classification) in self.classifications.iter_mut() {
             classification.train(&self.vocab, self.num_examples, self.smoothing);
@@ -85,7 +115,9 @@ impl Classifier {
         self.trained = true
     }
 
-    pub fn classify(&mut self, document: &Vec<String>) -> String {
+    /// Takes an unlabeled document that has been tokenized into a vector of strings
+    //  and then computes a classifying label for the document
+    pub fn classify_tokenized(&mut self, document: &Vec<String>) -> String {
         if !self.trained { self.train(); }
 
         let mut max_score = f64::NEG_INFINITY;
@@ -100,6 +132,30 @@ impl Classifier {
         }
 
         max_classification.unwrap().label.clone()
+    }
+
+    /// Takes an unlabled document and tokenizes it by breaking on spaces and
+    //  then computes a classifying label for the document
+    pub fn classify(&mut self, document: &String) -> String {
+        self.classify_tokenized(&split_document(document))
+    }
+
+    /// Similar to classify but instead of returning a single label, returns all
+    /// labels and the probabilities of each one given the document
+    pub fn get_document_probabilities_tokenized(&mut self, document: &Vec<String>) -> Vec<(String, f64)> {
+        if !self.trained { self.train(); }
+        
+        self.classifications.values().map(|classification| {
+            let score = classification.score_document(document, &self.vocab);
+            (classification.label.clone(), score)
+        }).collect()
+
+    }
+
+    /// Similar to classify but instead of returning a single label, returns all
+    /// labels and the probabilities of each one given the document
+    pub fn get_document_probabilities(&mut self, document: &String) -> Vec<(String, f64)> {
+        self.get_document_probabilities_tokenized(&split_document(document))
     }
 
     /// Encodes the classifier as a JSON string.
@@ -165,4 +221,9 @@ impl Classification {
         }
         self.probability.unwrap().ln() + total
     }
+}
+
+fn split_document(document: &String) -> Vec<String> {
+    let re = Regex::new(r"(\s)").unwrap();
+    re.split(document).map(|s| s.to_string()).collect()
 }
