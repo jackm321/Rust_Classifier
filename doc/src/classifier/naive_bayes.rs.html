@@ -260,18 +260,28 @@
 <span id="218">218</span>
 <span id="219">219</span>
 <span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::{<span class='ident'>HashMap</span>, <span class='ident'>HashSet</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>f64</span>;
 <span class='kw'>use</span> <span class='ident'>regex</span>::<span class='ident'>Regex</span>;
 <span class='kw'>use</span> <span class='ident'>rustc_serialize</span>::<span class='ident'>json</span>;
 
 <span class='kw'>static</span> <span class='ident'>DEFAULT_SMOOTHING</span>: <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>1.0f64</span>;
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Clone</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>RustcEncodable</span>)]</span>
 <span class='doccomment'>/// Naive Bayes classifier</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Clone</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>RustcEncodable</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Classifier</span> {
-    <span class='ident'>vocab</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='ident'>u32</span><span class='op'>&gt;</span>,
+    <span class='ident'>vocab</span>: <span class='ident'>HashSet</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
     <span class='ident'>num_examples</span>: <span class='ident'>u32</span>,
     <span class='ident'>smoothing</span>: <span class='ident'>f64</span>,
     <span class='ident'>classifications</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='ident'>Classification</span><span class='op'>&gt;</span>
@@ -292,7 +302,7 @@
     <span class='doccomment'>/// Creates a new classifier</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Classifier</span> {
         <span class='ident'>Classifier</span> {
-            <span class='ident'>vocab</span>: <span class='ident'>HashMap</span>::<span class='ident'>new</span>(),
+            <span class='ident'>vocab</span>: <span class='ident'>HashSet</span>::<span class='ident'>new</span>(),
             <span class='ident'>num_examples</span>: <span class='number'>0u32</span>,
             <span class='ident'>smoothing</span>: <span class='ident'>DEFAULT_SMOOTHING</span>,
             <span class='ident'>classifications</span>: <span class='ident'>HashMap</span>::<span class='ident'>new</span>(),
@@ -304,8 +314,6 @@
     <span class='doccomment'>/// classifier is aware of and will train on next time the `train()` method is called</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_document_tokenized</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>document</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>, <span class='ident'>label</span>: <span class='kw-2'>&amp;</span><span class='ident'>String</span>) {
         <span class='kw'>if</span> <span class='ident'>document</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>0</span> { <span class='kw'>return</span>; }
-
-        <span class='self'>self</span>.<span class='ident'>num_examples</span> <span class='op'>+=</span> <span class='number'>1</span>;
         
         <span class='comment'>// make sure the classification already exists</span>
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>classifications</span>.<span class='ident'>contains_key</span>(<span class='ident'>label</span>) {
@@ -316,28 +324,22 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>classification</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>classifications</span>.<span class='ident'>get_mut</span>(<span class='ident'>label</span>).<span class='ident'>unwrap</span>();
                 
         <span class='kw'>for</span> <span class='ident'>word</span> <span class='kw'>in</span> <span class='ident'>document</span>.<span class='ident'>iter</span>() {
-            <span class='comment'>// add word to classification</span>
             <span class='ident'>classification</span>.<span class='ident'>add_word</span>(<span class='ident'>word</span>);
-            
-            <span class='comment'>// add word to vocab</span>
-            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>vocab</span>.<span class='ident'>contains_key</span>(<span class='ident'>word</span>) {
-                <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>vocab</span>.<span class='ident'>get_mut</span>(<span class='ident'>word</span>).<span class='ident'>unwrap</span>() <span class='op'>+=</span> <span class='number'>1</span>;
-            } <span class='kw'>else</span> {
-                <span class='self'>self</span>.<span class='ident'>vocab</span>.<span class='ident'>insert</span>(<span class='ident'>word</span>.<span class='ident'>to_string</span>(), <span class='number'>1</span>);
-            }
+            <span class='self'>self</span>.<span class='ident'>vocab</span>.<span class='ident'>insert</span>(<span class='ident'>word</span>.<span class='ident'>to_string</span>());
         }
 
+        <span class='self'>self</span>.<span class='ident'>num_examples</span> <span class='op'>+=</span> <span class='number'>1</span>;
         <span class='ident'>classification</span>.<span class='ident'>num_examples</span> <span class='op'>+=</span> <span class='number'>1</span>;
     }
 
     <span class='doccomment'>/// Takes a document and a label and tokenizes the document by</span>
     <span class='doccomment'>/// breaking on whitespace characters. The document is added to the list</span>
-    <span class='doccomment'>/// of documents that the classifier is aware of and will train on next time the `train()` method is called </span>
+    <span class='doccomment'>/// of documents that the classifier is aware of and will train on next time</span>
+    <span class='doccomment'>/// the `train()` method is called </span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_document</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>document</span>: <span class='kw-2'>&amp;</span><span class='ident'>String</span>, <span class='ident'>label</span>: <span class='kw-2'>&amp;</span><span class='ident'>String</span>) {
         <span class='self'>self</span>.<span class='ident'>add_document_tokenized</span>(<span class='kw-2'>&amp;</span><span class='ident'>split_document</span>(<span class='ident'>document</span>), <span class='ident'>label</span>);
     }
 
-    
     <span class='doccomment'>/// Adds a list of (document, label) tuples to the classifier</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_documents</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>examples</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>String</span>, <span class='ident'>String</span>)<span class='op'>&gt;</span>) {
         <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='kw-2'>ref</span> <span class='ident'>document</span>, <span class='kw-2'>ref</span> <span class='ident'>label</span>) <span class='kw'>in</span> <span class='ident'>examples</span>.<span class='ident'>iter</span>() {
@@ -359,7 +361,8 @@
         <span class='ident'>labels</span>
     }
 
-    <span class='doccomment'>/// Sets the [smoothing](http://en.wikipedia.org/wiki/Additive_smoothing) value (must be greater than 0.0)</span>
+    <span class='doccomment'>/// Sets the [smoothing](http://en.wikipedia.org/wiki/Additive_smoothing)</span>
+    <span class='doccomment'>/// value (must be greater than 0.0)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_smoothing</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>smoothing</span>: <span class='ident'>f64</span>) {
         <span class='kw'>if</span> <span class='ident'>smoothing</span> <span class='op'>&lt;=</span> <span class='number'>0.0</span> {
             <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;smoothing value must be a positive number&quot;</span>);
@@ -400,10 +403,17 @@
     <span class='doccomment'>/// Similar to classify but instead of returning a single label, returns all</span>
     <span class='doccomment'>/// labels and the probabilities of each one given the document</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_document_probabilities_tokenized</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>document</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>String</span>, <span class='ident'>f64</span>)<span class='op'>&gt;</span> {        
-        <span class='self'>self</span>.<span class='ident'>classifications</span>.<span class='ident'>values</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>classification</span><span class='op'>|</span> {
+        
+        <span class='kw'>let</span> <span class='ident'>all_probs</span>:<span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>String</span>, <span class='ident'>f64</span>)<span class='op'>&gt;</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>classifications</span>.<span class='ident'>values</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>classification</span><span class='op'>|</span> {
             <span class='kw'>let</span> <span class='ident'>score</span> <span class='op'>=</span> <span class='ident'>classification</span>.<span class='ident'>score_document</span>(<span class='ident'>document</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>vocab</span>);
             (<span class='ident'>classification</span>.<span class='ident'>label</span>.<span class='ident'>clone</span>(), <span class='ident'>score</span>)
-        }).<span class='ident'>collect</span>()
+        }).<span class='ident'>collect</span>();
+
+        <span class='kw'>let</span> <span class='ident'>total_prob</span> <span class='op'>=</span> <span class='ident'>all_probs</span>.<span class='ident'>iter</span>()
+            .<span class='ident'>map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span>(_, <span class='ident'>s</span>)<span class='op'>|</span> <span class='ident'>s</span>)
+            .<span class='ident'>fold</span>(<span class='number'>0.0</span>, <span class='op'>|</span><span class='ident'>acc</span>, <span class='ident'>s</span><span class='op'>|</span> <span class='ident'>acc</span> <span class='op'>+</span> <span class='ident'>s</span>);
+
+        <span class='ident'>all_probs</span>.<span class='ident'>into_iter</span>().<span class='ident'>map</span>(<span class='op'>|</span>(<span class='ident'>c</span>, <span class='ident'>s</span>)<span class='op'>|</span> (<span class='ident'>c</span>, <span class='number'>1.0</span> <span class='op'>-</span> <span class='ident'>s</span><span class='op'>/</span><span class='ident'>total_prob</span>) ).<span class='ident'>collect</span>()
     }
 
     <span class='doccomment'>/// Similar to classify but instead of returning a single label, returns all</span>
@@ -448,24 +458,33 @@
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>train</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>vocab</span>: <span class='kw-2'>&amp;</span><span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='ident'>u32</span><span class='op'>&gt;</span>, <span class='ident'>total_examples</span>: <span class='ident'>u32</span>, <span class='ident'>smoothing</span>: <span class='ident'>f64</span>) {
+    <span class='comment'>// trains this classification</span>
+    <span class='kw'>fn</span> <span class='ident'>train</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>vocab</span>: <span class='kw-2'>&amp;</span><span class='ident'>HashSet</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>, <span class='ident'>total_examples</span>: <span class='ident'>u32</span>, <span class='ident'>smoothing</span>: <span class='ident'>f64</span>) {
+        <span class='comment'>// the probability of this classification</span>
         <span class='self'>self</span>.<span class='ident'>probability</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>num_examples</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>total_examples</span> <span class='kw'>as</span> <span class='ident'>f64</span>;
-        <span class='self'>self</span>.<span class='ident'>default_word_probability</span> <span class='op'>=</span> <span class='ident'>smoothing</span> <span class='op'>/</span> (<span class='self'>self</span>.<span class='ident'>num_words</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>+</span> <span class='ident'>smoothing</span> <span class='op'>*</span> <span class='ident'>vocab</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>f64</span>);
+        <span class='comment'>// the probability of any word that has not been seen in a document</span>
+        <span class='comment'>// labeled with this classification&#39;s label</span>
+        <span class='self'>self</span>.<span class='ident'>default_word_probability</span> <span class='op'>=</span> <span class='ident'>smoothing</span> <span class='op'>/</span>
+            (<span class='self'>self</span>.<span class='ident'>num_words</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>+</span> <span class='ident'>smoothing</span> <span class='op'>*</span> <span class='ident'>vocab</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>f64</span>);
         
-        <span class='kw'>for</span> <span class='ident'>word</span> <span class='kw'>in</span> <span class='ident'>vocab</span>.<span class='ident'>keys</span>() {
+        <span class='kw'>for</span> <span class='ident'>word</span> <span class='kw'>in</span> <span class='ident'>vocab</span>.<span class='ident'>iter</span>() {
             <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>words</span>.<span class='ident'>contains_key</span>(<span class='ident'>word</span>) {
                 <span class='kw'>let</span> <span class='ident'>word_entry</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>words</span>.<span class='ident'>get_mut</span>(<span class='ident'>word</span>).<span class='ident'>unwrap</span>();
                 <span class='kw'>let</span> <span class='ident'>word_count</span> <span class='op'>=</span> <span class='ident'>word_entry</span>.<span class='number'>0</span>;
-                <span class='kw'>let</span> <span class='ident'>p_word_given_label</span> <span class='op'>=</span> (<span class='ident'>word_count</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>+</span> <span class='ident'>smoothing</span>) <span class='op'>/</span> (<span class='self'>self</span>.<span class='ident'>num_words</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>+</span> <span class='ident'>smoothing</span> <span class='op'>*</span> <span class='ident'>vocab</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>f64</span>);
+                <span class='kw'>let</span> <span class='ident'>p_word_given_label</span> <span class='op'>=</span>
+                    (<span class='ident'>word_count</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>+</span> <span class='ident'>smoothing</span>) <span class='op'>/</span>
+                    (<span class='self'>self</span>.<span class='ident'>num_words</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>+</span> <span class='ident'>smoothing</span> <span class='op'>*</span> <span class='ident'>vocab</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>f64</span>);
                 <span class='ident'>word_entry</span>.<span class='number'>1</span> <span class='op'>=</span> <span class='ident'>p_word_given_label</span>;
             }
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>score_document</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>document</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>, <span class='ident'>vocab</span>: <span class='kw-2'>&amp;</span><span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='ident'>u32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>f64</span> {
+    <span class='comment'>// retrieves the probability of the document given this classification</span>
+    <span class='comment'>// times the probability of this classification</span>
+    <span class='kw'>fn</span> <span class='ident'>score_document</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>document</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>, <span class='ident'>vocab</span>: <span class='kw-2'>&amp;</span><span class='ident'>HashSet</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>f64</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>total</span> <span class='op'>=</span> <span class='number'>0.0f64</span>;
         <span class='kw'>for</span> <span class='ident'>word</span> <span class='kw'>in</span> <span class='ident'>document</span>.<span class='ident'>iter</span>() {
-            <span class='kw'>if</span> <span class='ident'>vocab</span>.<span class='ident'>contains_key</span>(<span class='ident'>word</span>) {
+            <span class='kw'>if</span> <span class='ident'>vocab</span>.<span class='ident'>contains</span>(<span class='ident'>word</span>) {
                 <span class='kw'>let</span> <span class='ident'>word_probability</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>words</span>.<span class='ident'>get</span>(<span class='ident'>word</span>) {
                     <span class='prelude-val'>Some</span>( <span class='kw-2'>&amp;</span>(_, <span class='ident'>p</span>) ) <span class='op'>=&gt;</span> <span class='ident'>p</span>,
                     <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>default_word_probability</span>,
@@ -477,6 +496,7 @@
     }
 }
 
+<span class='comment'>// splits a String on whitespaces</span>
 <span class='kw'>fn</span> <span class='ident'>split_document</span>(<span class='ident'>document</span>: <span class='kw-2'>&amp;</span><span class='ident'>String</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>re</span> <span class='op'>=</span> <span class='ident'>Regex</span>::<span class='ident'>new</span>(<span class='string'>r&quot;(\s)&quot;</span>).<span class='ident'>unwrap</span>();
     <span class='ident'>re</span>.<span class='ident'>split</span>(<span class='ident'>document</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>s</span><span class='op'>|</span> <span class='ident'>s</span>.<span class='ident'>to_string</span>()).<span class='ident'>collect</span>()

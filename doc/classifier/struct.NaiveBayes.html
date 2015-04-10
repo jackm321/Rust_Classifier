@@ -43,7 +43,7 @@
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>classifier</a>::<wbr><a class='struct' href=''>NaiveBayes</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-15' href='../src/classifier/naive_bayes.rs.html#10-15'>[src]</a></span></h1>
+        </span><a id='src-17' href='../src/classifier/naive_bayes.rs.html#10-15'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct NaiveBayes {
     // some fields omitted
 }</pre><div class='docblock'><p>Naive Bayes classifier</p>
@@ -56,7 +56,8 @@ classifier is aware of and will train on next time the <code>train()</code> meth
 </div><h4 id='method.add_document' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_document' class='fnname'>add_document</a>(&amp;mut self, document: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, label: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</code></h4>
 <div class='docblock'><p>Takes a document and a label and tokenizes the document by
 breaking on whitespace characters. The document is added to the list
-of documents that the classifier is aware of and will train on next time the <code>train()</code> method is called </p>
+of documents that the classifier is aware of and will train on next time
+the <code>train()</code> method is called </p>
 </div><h4 id='method.add_documents' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_documents' class='fnname'>add_documents</a>(&amp;mut self, examples: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</a>&gt;)</code></h4>
 <div class='docblock'><p>Adds a list of (document, label) tuples to the classifier</p>
 </div><h4 id='method.add_documents_tokenized' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_documents_tokenized' class='fnname'>add_documents_tokenized</a>(&amp;mut self, examples: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</a>&gt;)</code></h4>
@@ -64,7 +65,8 @@ of documents that the classifier is aware of and will train on next time the <co
 </div><h4 id='method.get_labels' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_labels' class='fnname'>get_labels</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h4>
 <div class='docblock'><p>Gets a vector of all of the labels that the classifier has seen so far</p>
 </div><h4 id='method.set_smoothing' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_smoothing' class='fnname'>set_smoothing</a>(&amp;mut self, smoothing: <a href='http://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>)</code></h4>
-<div class='docblock'><p>Sets the <a href="http://en.wikipedia.org/wiki/Additive_smoothing">smoothing</a> value (must be greater than 0.0)</p>
+<div class='docblock'><p>Sets the <a href="http://en.wikipedia.org/wiki/Additive_smoothing">smoothing</a>
+value (must be greater than 0.0)</p>
 </div><h4 id='method.train' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.train' class='fnname'>train</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Trains the classifier on the documents that have been observed so far</p>
 </div><h4 id='method.classify_tokenized' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.classify_tokenized' class='fnname'>classify_tokenized</a>(&amp;self, document: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
