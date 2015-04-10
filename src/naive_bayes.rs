@@ -41,8 +41,6 @@ impl Classifier {
     /// classifier is aware of and will train on next time the `train()` method is called
     pub fn add_document_tokenized(&mut self, document: &Vec<String>, label: &String) {
         if document.len() == 0 { return; }
-
-        self.num_examples += 1;
         
         // make sure the classification already exists
         if !self.classifications.contains_key(label) {
@@ -53,18 +51,11 @@ impl Classifier {
         let mut classification = self.classifications.get_mut(label).unwrap();
                 
         for word in document.iter() {
-            // add word to classification
             classification.add_word(word);
-            
-            // add word to vocab
             self.vocab.insert(word.to_string());
-            // if self.vocab.contains_key(word) {
-            //     *self.vocab.get_mut(word).unwrap() += 1;
-            // } else {
-            //     self.vocab.insert(word.to_string(), 1);
-            // }
         }
 
+        self.num_examples += 1;
         classification.num_examples += 1;
     }
 
@@ -75,7 +66,6 @@ impl Classifier {
         self.add_document_tokenized(&split_document(document), label);
     }
 
-    
     /// Adds a list of (document, label) tuples to the classifier
     pub fn add_documents(&mut self, examples: &Vec<(String, String)>) {
         for &(ref document, ref label) in examples.iter() {
@@ -186,8 +176,12 @@ impl Classification {
         }
     }
 
+    // trains this classification
     fn train(&mut self, vocab: &HashSet<String>, total_examples: u32, smoothing: f64) {
+        // the probability of this classification
         self.probability = self.num_examples as f64 / total_examples as f64;
+        // the probability of any word that has not been seen in a document
+        // labeled with this classification's label
         self.default_word_probability = smoothing / (self.num_words as f64 + smoothing * vocab.len() as f64);
         
         for word in vocab.iter() {
@@ -200,6 +194,8 @@ impl Classification {
         }
     }
 
+    // retrieves the probability of the document given this classification
+    // times the probability of this classification
     fn score_document(&self, document: &Vec<String>, vocab: &HashSet<String>) -> f64 {
         let mut total = 0.0f64;
         for word in document.iter() {
@@ -215,6 +211,7 @@ impl Classification {
     }
 }
 
+// splits a String on whitespaces
 fn split_document(document: &String) -> Vec<String> {
     let re = Regex::new(r"(\s)").unwrap();
     re.split(document).map(|s| s.to_string()).collect()
