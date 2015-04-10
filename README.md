@@ -7,7 +7,7 @@ crate for probabilistically classifying text documents.
   
 [Documentation](https://jackm321.github.io/Rust_Classifier/doc/classifier/)
 
-# Example: classifying documents about food
+## Example: classifying documents about food
 ```rust
 use classifier::NaiveBayes;
 

@@ -1,7 +1,7 @@
 //! A simple [naive Bayes classifier](http://en.wikipedia.org/wiki/Naive_Bayes_classifier)
 //! crate for probabilistically classifying text documents.
 
-//! # Example: classifying documents about food
+//! ## Example: classifying documents about food
 //!
 //! ```rust
 //! use classifier::NaiveBayes;
