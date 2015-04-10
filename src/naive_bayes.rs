@@ -11,7 +11,6 @@ pub struct Classifier {
     vocab: HashMap<String, u32>,
     num_examples: u32,
     smoothing: f64,
-    trained: bool,
     classifications: HashMap<String, Classification>
 }
 
@@ -20,9 +19,9 @@ struct Classification {
     label: String,
     num_examples: u32,
     num_words: u32,
-    probability: Option<f64>,
-    default_word_probability: Option<f64>,
-    words: HashMap<String, (u32, Option<f64>)>,
+    probability: f64,
+    default_word_probability: f64,
+    words: HashMap<String, (u32, f64)>,
 }
 
 impl Classifier {
@@ -33,7 +32,6 @@ impl Classifier {
             vocab: HashMap::new(),
             num_examples: 0u32,
             smoothing: DEFAULT_SMOOTHING,
-            trained: false,
             classifications: HashMap::new(),
         }
     }
@@ -45,7 +43,6 @@ impl Classifier {
         if document.len() == 0 { return; }
 
         self.num_examples += 1;
-        self.trained = false;
         
         // make sure the classification already exists
         if !self.classifications.contains_key(label) {
@@ -112,14 +109,13 @@ impl Classifier {
         for (_, classification) in self.classifications.iter_mut() {
             classification.train(&self.vocab, self.num_examples, self.smoothing);
         }
-        self.trained = true
     }
 
     /// Takes an unlabeled document that has been tokenized into a vector of strings
-    //  and then computes a classifying label for the document
-    pub fn classify_tokenized(&mut self, document: &Vec<String>) -> String {
-        if !self.trained { self.train(); }
-
+    /// and then computes a classifying label for the document
+    /// This will panic if documents have been atdded to he classifier without
+    /// the classifier being trained before this is called
+    pub fn classify_tokenized(&self, document: &Vec<String>) -> String {
         let mut max_score = f64::NEG_INFINITY;
         let mut max_classification = None;
         
@@ -131,30 +127,27 @@ impl Classifier {
             }
         }
 
-        max_classification.unwrap().label.clone()
+        max_classification.expect("no classification found").label.clone()
     }
 
     /// Takes an unlabled document and tokenizes it by breaking on spaces and
     //  then computes a classifying label for the document
-    pub fn classify(&mut self, document: &String) -> String {
+    pub fn classify(&self, document: &String) -> String {
         self.classify_tokenized(&split_document(document))
     }
 
     /// Similar to classify but instead of returning a single label, returns all
     /// labels and the probabilities of each one given the document
-    pub fn get_document_probabilities_tokenized(&mut self, document: &Vec<String>) -> Vec<(String, f64)> {
-        if !self.trained { self.train(); }
-        
+    pub fn get_document_probabilities_tokenized(&self, document: &Vec<String>) -> Vec<(String, f64)> {        
         self.classifications.values().map(|classification| {
             let score = classification.score_document(document, &self.vocab);
             (classification.label.clone(), score)
         }).collect()
-
     }
 
     /// Similar to classify but instead of returning a single label, returns all
     /// labels and the probabilities of each one given the document
-    pub fn get_document_probabilities(&mut self, document: &String) -> Vec<(String, f64)> {
+    pub fn get_document_probabilities(&self, document: &String) -> Vec<(String, f64)> {
         self.get_document_probabilities_tokenized(&split_document(document))
     }
 
@@ -179,8 +172,8 @@ impl Classification {
             label: label.clone(),
             num_examples: 0u32,
             num_words: 0u32,
-            probability: None,
-            default_word_probability: None,
+            probability: 0.0f64,
+            default_word_probability: 0.0f64,
             words: HashMap::new(),
         }
     }
@@ -190,20 +183,20 @@ impl Classification {
         if self.words.contains_key(word) {
             self.words.get_mut(word).unwrap().0 += 1;
         } else {
-            self.words.insert(word.clone(), (1, None));
+            self.words.insert(word.clone(), (1, 0.0f64));
         }
     }
 
     fn train(&mut self, vocab: &HashMap<String, u32>, total_examples: u32, smoothing: f64) {
-        self.probability = Some(self.num_examples as f64 / total_examples as f64);
-        self.default_word_probability = Some(smoothing / (self.num_words as f64 + smoothing * vocab.len() as f64));
+        self.probability = self.num_examples as f64 / total_examples as f64;
+        self.default_word_probability = smoothing / (self.num_words as f64 + smoothing * vocab.len() as f64);
         
         for word in vocab.keys() {
             if self.words.contains_key(word) {
                 let word_entry = self.words.get_mut(word).unwrap();
                 let word_count = word_entry.0;
                 let p_word_given_label = (word_count as f64 + smoothing) / (self.num_words as f64 + smoothing * vocab.len() as f64);
-                word_entry.1 = Some(p_word_given_label);
+                word_entry.1 = p_word_given_label;
             }
         }
     }
@@ -213,13 +206,13 @@ impl Classification {
         for word in document.iter() {
             if vocab.contains_key(word) {
                 let word_probability = match self.words.get(word) {
-                    Some( &(_, p) ) => p.unwrap(),
-                    None => self.default_word_probability.unwrap(),
+                    Some( &(_, p) ) => p,
+                    None => self.default_word_probability,
                 };
                 total += word_probability.ln();
             }
         }
-        self.probability.unwrap().ln() + total
+        self.probability.ln() + total
     }
 }
 
