@@ -99,7 +99,7 @@ impl Classifier {
     /// Sets the [smoothing](http://en.wikipedia.org/wiki/Additive_smoothing) value (must be greater than 0.0)
     pub fn set_smoothing(&mut self, smoothing: f64) {
         if smoothing <= 0.0 {
-            panic!("smoothing must be a positive number");
+            panic!("smoothing value must be a positive number");
         }
         self.smoothing = smoothing;
     }
@@ -113,8 +113,6 @@ impl Classifier {
 
     /// Takes an unlabeled document that has been tokenized into a vector of strings
     /// and then computes a classifying label for the document
-    /// This will panic if documents have been atdded to he classifier without
-    /// the classifier being trained before this is called
     pub fn classify_tokenized(&self, document: &Vec<String>) -> String {
         let mut max_score = f64::NEG_INFINITY;
         let mut max_classification = None;
@@ -130,8 +128,8 @@ impl Classifier {
         max_classification.expect("no classification found").label.clone()
     }
 
-    /// Takes an unlabled document and tokenizes it by breaking on spaces and
-    //  then computes a classifying label for the document
+    /// Takes an unlabeled document and tokenizes it by breaking on spaces and
+    /// then computes a classifying label for the document
     pub fn classify(&self, document: &String) -> String {
         self.classify_tokenized(&split_document(document))
     }

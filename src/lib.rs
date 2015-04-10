@@ -1,7 +1,7 @@
 //! A simple [naive Bayes classifier](http://en.wikipedia.org/wiki/Naive_Bayes_classifier)
-//! library for probabilistically classifying text documents.
+//! crate for probabilistically classifying text documents.
 
-//! # Example: classifying sentences about food
+//! # Example: classifying documents about food
 //!
 //! ```rust
 //! use classifier::NaiveBayes;
@@ -30,10 +30,10 @@
 //! // train the classifier
 //! nb.train();
 //! 
-//! // now try to classify a new sentence with the classifier
-//! let food_sentence = "salami pancetta beef ribs".to_string();
+//! // now try to classify a new document with the classifier
+//! let food_document = "salami pancetta beef ribs".to_string();
 //! 
-//! assert_eq!( nb.classify(&food_sentence), "meat" );
+//! assert_eq!( nb.classify(&food_document), "meat" );
 //! ```
 //! meat examples from [baconipsum](http://baconipsum.com/), veggie examples from: [veggieipsum](http://veggieipsum.com/)
 
