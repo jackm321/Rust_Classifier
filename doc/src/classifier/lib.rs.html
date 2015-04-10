@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/lib.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
+
+    <title>lib.rs.html -- source</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+</pre><pre class='rust '>
+<span class='doccomment'>//! A simple [naive Bayes classifier](http://en.wikipedia.org/wiki/Naive_Bayes_classifier)</span>
+<span class='doccomment'>//! crate for probabilistically classifying text documents.</span>
+
+<span class='doccomment'>//! ## Example: classifying documents about food</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! use classifier::NaiveBayes;</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//! // create a new classifier</span>
+<span class='doccomment'>//! let mut nb = NaiveBayes::new();</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//! // some example documents and labels</span>
+<span class='doccomment'>//! let examples = [</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//!     (&quot;beetroot water spinach okra water chestnut ricebean pea catsear courgette summer purslane. water spinach arugula pea tatsoi aubergine spring onion bush tomato kale radicchio turnip chicory salsify pea sprouts fava bean. dandelion zucchini burdock yarrow chickpea dandelion sorrel courgette turnip greens tigernut soybean radish artichoke wattle seed endive groundnut broccoli arugula.&quot;, &quot;veggie&quot;),</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//!     (&quot;sirloin meatloaf ham hock sausage meatball tongue prosciutto picanha turkey ball tip pastrami. ribeye chicken sausage, ham hock landjaeger pork belly pancetta ball tip tenderloin leberkas shank shankle rump. cupim short ribs ground round biltong tenderloin ribeye drumstick landjaeger short loin doner chicken shoulder spare ribs fatback boudin. pork chop shank shoulder, t-bone beef ribs drumstick landjaeger meatball.&quot;, &quot;meat&quot;),</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//!     (&quot;pea horseradish azuki bean lettuce avocado asparagus okra. kohlrabi radish okra azuki bean corn fava bean mustard tigernut jã­cama green bean celtuce collard greens avocado quandong fennel gumbo black-eyed pea. grape silver beet watercress potato tigernut corn groundnut. chickweed okra pea winter purslane coriander yarrow sweet pepper radish garlic brussels sprout groundnut summer purslane earthnut pea tomato spring onion azuki bean gourd. gumbo kakadu plum komatsuna black-eyed pea green bean zucchini gourd winter purslane silver beet rock melon radish asparagus spinach.&quot;, &quot;veggie&quot;),</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//!     (&quot;sirloin porchetta drumstick, pastrami bresaola landjaeger turducken kevin ham capicola corned beef. pork cow capicola, pancetta turkey tri-tip doner ball tip salami. fatback pastrami rump pancetta landjaeger. doner porchetta meatloaf short ribs cow chuck jerky pork chop landjaeger picanha tail.&quot;, &quot;meat&quot;),</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//! ];</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//! // add each example document to the classifier</span>
+<span class='doccomment'>//! for &amp;(document, label) in examples.iter() {</span>
+<span class='doccomment'>//!     nb.add_document(&amp;document.to_string(), &amp;label.to_string());</span>
+<span class='doccomment'>//! }</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//! // train the classifier</span>
+<span class='doccomment'>//! nb.train();</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//! // now try to classify a new document with the classifier</span>
+<span class='doccomment'>//! let food_document = &quot;salami pancetta beef ribs&quot;.to_string();</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//! assert_eq!( nb.classify(&amp;food_document), &quot;meat&quot; );</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//! meat examples from [baconipsum](http://baconipsum.com/), veggie examples from: [veggieipsum](http://veggieipsum.com/)</span>
+
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rustc_serialize</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>regex</span>;
+
+<span class='kw'>mod</span> <span class='ident'>naive_bayes</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>naive_bayes</span>::<span class='ident'>Classifier</span> <span class='kw'>as</span> <span class='ident'>NaiveBayes</span>;
+</pre>
+</section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "classifier";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

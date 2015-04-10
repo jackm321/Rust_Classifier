@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `classifier` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, classifier">
+
+    <title>classifier - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'classifier', ty: 'mod', relpath: '../'};</script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>classifier</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-0' href='../src/classifier/lib.rs.html#1-44'>[src]</a></span></h1>
+<div class='docblock'><p>A simple <a href="http://en.wikipedia.org/wiki/Naive_Bayes_classifier">naive Bayes classifier</a>
+crate for probabilistically classifying text documents.</p>
+
+<h2 id="example:-classifying-documents-about-food" class='section-header'><a
+                           href="#example:-classifying-documents-about-food">Example: classifying documents about food</a></h2><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>use</span> <span class='ident'>classifier</span>::<span class='ident'>NaiveBayes</span>;
+ 
+<span class='comment'>// create a new classifier</span>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>nb</span> <span class='op'>=</span> <span class='ident'>NaiveBayes</span>::<span class='ident'>new</span>();
+ 
+<span class='comment'>// some example documents and labels</span>
+<span class='kw'>let</span> <span class='ident'>examples</span> <span class='op'>=</span> [
+ 
+    (<span class='string'>&quot;beetroot water spinach okra water chestnut ricebean pea catsear courgette summer purslane. water spinach arugula pea tatsoi aubergine spring onion bush tomato kale radicchio turnip chicory salsify pea sprouts fava bean. dandelion zucchini burdock yarrow chickpea dandelion sorrel courgette turnip greens tigernut soybean radish artichoke wattle seed endive groundnut broccoli arugula.&quot;</span>, <span class='string'>&quot;veggie&quot;</span>),
+ 
+    (<span class='string'>&quot;sirloin meatloaf ham hock sausage meatball tongue prosciutto picanha turkey ball tip pastrami. ribeye chicken sausage, ham hock landjaeger pork belly pancetta ball tip tenderloin leberkas shank shankle rump. cupim short ribs ground round biltong tenderloin ribeye drumstick landjaeger short loin doner chicken shoulder spare ribs fatback boudin. pork chop shank shoulder, t-bone beef ribs drumstick landjaeger meatball.&quot;</span>, <span class='string'>&quot;meat&quot;</span>),
+ 
+    (<span class='string'>&quot;pea horseradish azuki bean lettuce avocado asparagus okra. kohlrabi radish okra azuki bean corn fava bean mustard tigernut jã­cama green bean celtuce collard greens avocado quandong fennel gumbo black-eyed pea. grape silver beet watercress potato tigernut corn groundnut. chickweed okra pea winter purslane coriander yarrow sweet pepper radish garlic brussels sprout groundnut summer purslane earthnut pea tomato spring onion azuki bean gourd. gumbo kakadu plum komatsuna black-eyed pea green bean zucchini gourd winter purslane silver beet rock melon radish asparagus spinach.&quot;</span>, <span class='string'>&quot;veggie&quot;</span>),
+ 
+    (<span class='string'>&quot;sirloin porchetta drumstick, pastrami bresaola landjaeger turducken kevin ham capicola corned beef. pork cow capicola, pancetta turkey tri-tip doner ball tip salami. fatback pastrami rump pancetta landjaeger. doner porchetta meatloaf short ribs cow chuck jerky pork chop landjaeger picanha tail.&quot;</span>, <span class='string'>&quot;meat&quot;</span>),
+ 
+];
+ 
+<span class='comment'>// add each example document to the classifier</span>
+<span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='ident'>document</span>, <span class='ident'>label</span>) <span class='kw'>in</span> <span class='ident'>examples</span>.<span class='ident'>iter</span>() {
+    <span class='ident'>nb</span>.<span class='ident'>add_document</span>(<span class='kw-2'>&amp;</span><span class='ident'>document</span>.<span class='ident'>to_string</span>(), <span class='kw-2'>&amp;</span><span class='ident'>label</span>.<span class='ident'>to_string</span>());
+}
+ 
+<span class='comment'>// train the classifier</span>
+<span class='ident'>nb</span>.<span class='ident'>train</span>();
+ 
+<span class='comment'>// now try to classify a new document with the classifier</span>
+<span class='kw'>let</span> <span class='ident'>food_document</span> <span class='op'>=</span> <span class='string'>&quot;salami pancetta beef ribs&quot;</span>.<span class='ident'>to_string</span>();
+ 
+<span class='macro'>assert_eq</span><span class='macro'>!</span>( <span class='ident'>nb</span>.<span class='ident'>classify</span>(<span class='kw-2'>&amp;</span><span class='ident'>food_document</span>), <span class='string'>&quot;meat&quot;</span> );
+</pre>
+
+<p>meat examples from <a href="http://baconipsum.com/">baconipsum</a>, veggie examples from: <a href="http://veggieipsum.com/">veggieipsum</a></p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.NaiveBayes.html'
+                               title='classifier::NaiveBayes'>NaiveBayes</a></td>
+                        <td class='docblock short'><p>Naive Bayes classifier</p>
+</td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "classifier";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

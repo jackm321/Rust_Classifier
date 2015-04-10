@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Classifier","Naive Bayes classifier"]]});

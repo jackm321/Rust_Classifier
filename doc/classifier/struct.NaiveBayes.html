@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `NaiveBayes` struct in crate `classifier`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, NaiveBayes">
+
+    <title>classifier::NaiveBayes - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>classifier</a></p><script>window.sidebarCurrent = {name: 'NaiveBayes', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>classifier</a>::<wbr><a class='struct' href=''>NaiveBayes</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-15' href='../src/classifier/naive_bayes.rs.html#10-15'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct NaiveBayes {
+    // some fields omitted
+}</pre><div class='docblock'><p>Naive Bayes classifier</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a></code></h4>
+<div class='docblock'><p>Creates a new classifier</p>
+</div><h4 id='method.add_document_tokenized' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_document_tokenized' class='fnname'>add_document_tokenized</a>(&amp;mut self, document: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, label: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</code></h4>
+<div class='docblock'><p>Takes a document that has been tokenized into a vector of strings
+and a label and adds the document to the list of documents that the
+classifier is aware of and will train on next time the <code>train()</code> method is called</p>
+</div><h4 id='method.add_document' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_document' class='fnname'>add_document</a>(&amp;mut self, document: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, label: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</code></h4>
+<div class='docblock'><p>Takes a document and a label and tokenizes the document by
+breaking on whitespace characters. The document is added to the list
+of documents that the classifier is aware of and will train on next time the <code>train()</code> method is called </p>
+</div><h4 id='method.add_documents' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_documents' class='fnname'>add_documents</a>(&amp;mut self, examples: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</a>&gt;)</code></h4>
+<div class='docblock'><p>Adds a list of (document, label) tuples to the classifier</p>
+</div><h4 id='method.add_documents_tokenized' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_documents_tokenized' class='fnname'>add_documents_tokenized</a>(&amp;mut self, examples: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</a>&gt;)</code></h4>
+<div class='docblock'><p>Adds a list of (tokenized document, label) tuples to the classifier</p>
+</div><h4 id='method.get_labels' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_labels' class='fnname'>get_labels</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h4>
+<div class='docblock'><p>Gets a vector of all of the labels that the classifier has seen so far</p>
+</div><h4 id='method.set_smoothing' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_smoothing' class='fnname'>set_smoothing</a>(&amp;mut self, smoothing: <a href='http://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>)</code></h4>
+<div class='docblock'><p>Sets the <a href="http://en.wikipedia.org/wiki/Additive_smoothing">smoothing</a> value (must be greater than 0.0)</p>
+</div><h4 id='method.train' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.train' class='fnname'>train</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Trains the classifier on the documents that have been observed so far</p>
+</div><h4 id='method.classify_tokenized' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.classify_tokenized' class='fnname'>classify_tokenized</a>(&amp;self, document: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
+<div class='docblock'><p>Takes an unlabeled document that has been tokenized into a vector of strings
+and then computes a classifying label for the document</p>
+</div><h4 id='method.classify' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.classify' class='fnname'>classify</a>(&amp;self, document: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
+<div class='docblock'><p>Takes an unlabeled document and tokenizes it by breaking on spaces and
+then computes a classifying label for the document</p>
+</div><h4 id='method.get_document_probabilities_tokenized' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_document_probabilities_tokenized' class='fnname'>get_document_probabilities_tokenized</a>(&amp;self, document: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>)</a>&gt;</code></h4>
+<div class='docblock'><p>Similar to classify but instead of returning a single label, returns all
+labels and the probabilities of each one given the document</p>
+</div><h4 id='method.get_document_probabilities' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_document_probabilities' class='fnname'>get_document_probabilities</a>(&amp;self, document: &amp;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>)</a>&gt;</code></h4>
+<div class='docblock'><p>Similar to classify but instead of returning a single label, returns all
+labels and the probabilities of each one given the document</p>
+</div><h4 id='method.to_json' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.to_json' class='fnname'>to_json</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
+<div class='docblock'><p>Encodes the classifier as a JSON string.</p>
+</div><h4 id='method.from_json' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.from_json' class='fnname'>from_json</a>(encoded: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a></code></h4>
+<div class='docblock'><p>Builds a new classifier from a JSON string</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rustc_serialize/serialize/trait.Encodable.html' title='rustc_serialize::serialize::Encodable'>Encodable</a> for <a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a></code></h3><div class='impl-items'><h4 id='method.encode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.encode' class='fnname'>encode</a>&lt;__S: <a class='trait' href='../rustc_serialize/serialize/trait.Encoder.html' title='rustc_serialize::serialize::Encoder'>Encoder</a>&gt;(&amp;self, __arg_0: &amp;mut __S) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, __S&gt;</code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> for <a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a></code></h3><div class='impl-items'><h4 id='method.decode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.decode' class='fnname'>decode</a>&lt;__D: <a class='trait' href='../rustc_serialize/serialize/trait.Decoder.html' title='rustc_serialize::serialize::Decoder'>Decoder</a>&gt;(__arg_0: &amp;mut __D) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a>, __D&gt;</code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a></code></h4>
+<h4 id='method.clone_from' class='tymethod'><a class='stability Unstable' title='Unstable: this function is rarely used'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../classifier/struct.NaiveBayes.html' title='classifier::NaiveBayes'>Classifier</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "classifier";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
