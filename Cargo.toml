@@ -1,7 +1,7 @@
 [package]
 
 name = "classifier"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Jack Montgomery <jackm321@gmail.com>"]
 repository = "https://github.com/jackm321/Rust_Classifier"
 documentation = "https://jackm321.github.io/Rust_Classifier/doc/classifier/"

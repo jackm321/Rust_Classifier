@@ -5,8 +5,8 @@ use rustc_serialize::json;
 
 static DEFAULT_SMOOTHING: f64 = 1.0f64;
 
-#[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 /// Naive Bayes classifier
+#[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 pub struct Classifier {
     vocab: HashSet<String>,
     num_examples: u32,
@@ -61,7 +61,8 @@ impl Classifier {
 
     /// Takes a document and a label and tokenizes the document by
     /// breaking on whitespace characters. The document is added to the list
-    /// of documents that the classifier is aware of and will train on next time the `train()` method is called 
+    /// of documents that the classifier is aware of and will train on next time
+    /// the `train()` method is called 
     pub fn add_document(&mut self, document: &String, label: &String) {
         self.add_document_tokenized(&split_document(document), label);
     }
@@ -87,7 +88,8 @@ impl Classifier {
         labels
     }
 
-    /// Sets the [smoothing](http://en.wikipedia.org/wiki/Additive_smoothing) value (must be greater than 0.0)
+    /// Sets the [smoothing](http://en.wikipedia.org/wiki/Additive_smoothing)
+    /// value (must be greater than 0.0)
     pub fn set_smoothing(&mut self, smoothing: f64) {
         if smoothing <= 0.0 {
             panic!("smoothing value must be a positive number");
@@ -128,10 +130,17 @@ impl Classifier {
     /// Similar to classify but instead of returning a single label, returns all
     /// labels and the probabilities of each one given the document
     pub fn get_document_probabilities_tokenized(&self, document: &Vec<String>) -> Vec<(String, f64)> {        
-        self.classifications.values().map(|classification| {
+        
+        let all_probs:Vec<(String, f64)> = self.classifications.values().map(|classification| {
             let score = classification.score_document(document, &self.vocab);
             (classification.label.clone(), score)
-        }).collect()
+        }).collect();
+
+        let total_prob = all_probs.iter()
+            .map(|&(_, s)| s)
+            .fold(0.0, |acc, s| acc + s);
+
+        all_probs.into_iter().map(|(c, s)| (c, 1.0 - s/total_prob) ).collect()
     }
 
     /// Similar to classify but instead of returning a single label, returns all
@@ -182,13 +191,16 @@ impl Classification {
         self.probability = self.num_examples as f64 / total_examples as f64;
         // the probability of any word that has not been seen in a document
         // labeled with this classification's label
-        self.default_word_probability = smoothing / (self.num_words as f64 + smoothing * vocab.len() as f64);
+        self.default_word_probability = smoothing /
+            (self.num_words as f64 + smoothing * vocab.len() as f64);
         
         for word in vocab.iter() {
             if self.words.contains_key(word) {
                 let word_entry = self.words.get_mut(word).unwrap();
                 let word_count = word_entry.0;
-                let p_word_given_label = (word_count as f64 + smoothing) / (self.num_words as f64 + smoothing * vocab.len() as f64);
+                let p_word_given_label =
+                    (word_count as f64 + smoothing) /
+                    (self.num_words as f64 + smoothing * vocab.len() as f64);
                 word_entry.1 = p_word_given_label;
             }
         }
