@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::f64;
 use regex::Regex;
 use rustc_serialize::json;
@@ -8,7 +8,7 @@ static DEFAULT_SMOOTHING: f64 = 1.0f64;
 #[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 /// Naive Bayes classifier
 pub struct Classifier {
-    vocab: HashMap<String, u32>,
+    vocab: HashSet<String>,
     num_examples: u32,
     smoothing: f64,
     classifications: HashMap<String, Classification>
@@ -29,7 +29,7 @@ impl Classifier {
     /// Creates a new classifier
     pub fn new() -> Classifier {
         Classifier {
-            vocab: HashMap::new(),
+            vocab: HashSet::new(),
             num_examples: 0u32,
             smoothing: DEFAULT_SMOOTHING,
             classifications: HashMap::new(),
@@ -57,11 +57,12 @@ impl Classifier {
             classification.add_word(word);
             
             // add word to vocab
-            if self.vocab.contains_key(word) {
-                *self.vocab.get_mut(word).unwrap() += 1;
-            } else {
-                self.vocab.insert(word.to_string(), 1);
-            }
+            self.vocab.insert(word.to_string());
+            // if self.vocab.contains_key(word) {
+            //     *self.vocab.get_mut(word).unwrap() += 1;
+            // } else {
+            //     self.vocab.insert(word.to_string(), 1);
+            // }
         }
 
         classification.num_examples += 1;
@@ -185,11 +186,11 @@ impl Classification {
         }
     }
 
-    fn train(&mut self, vocab: &HashMap<String, u32>, total_examples: u32, smoothing: f64) {
+    fn train(&mut self, vocab: &HashSet<String>, total_examples: u32, smoothing: f64) {
         self.probability = self.num_examples as f64 / total_examples as f64;
         self.default_word_probability = smoothing / (self.num_words as f64 + smoothing * vocab.len() as f64);
         
-        for word in vocab.keys() {
+        for word in vocab.iter() {
             if self.words.contains_key(word) {
                 let word_entry = self.words.get_mut(word).unwrap();
                 let word_count = word_entry.0;
@@ -199,10 +200,10 @@ impl Classification {
         }
     }
 
-    fn score_document(&self, document: &Vec<String>, vocab: &HashMap<String, u32>) -> f64 {
+    fn score_document(&self, document: &Vec<String>, vocab: &HashSet<String>) -> f64 {
         let mut total = 0.0f64;
         for word in document.iter() {
-            if vocab.contains_key(word) {
+            if vocab.contains(word) {
                 let word_probability = match self.words.get(word) {
                     Some( &(_, p) ) => p,
                     None => self.default_word_probability,
