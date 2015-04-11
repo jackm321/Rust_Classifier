@@ -1,5 +1,7 @@
 # Classifier
 
+[![Build Status](https://travis-ci.org/jackm321/Rust_Classifier.svg?branch=master)](https://travis-ci.org/jackm321/Rust_Classifier)
+
 A simple [naive Bayes classifier](http://en.wikipedia.org/wiki/Naive_Bayes_classifier)
 crate for probabilistically classifying text documents.
 
