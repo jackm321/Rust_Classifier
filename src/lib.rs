@@ -37,7 +37,7 @@
 //! ```
 //! meat examples from [baconipsum](http://baconipsum.com/), veggie examples from: [veggieipsum](http://veggieipsum.com/)
 
-extern crate rustc_serialize;
+extern crate serde;
 extern crate regex;
 
 mod naive_bayes;
