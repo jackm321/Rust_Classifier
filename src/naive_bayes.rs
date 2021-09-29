@@ -1,12 +1,12 @@
 use std::collections::{HashMap, HashSet};
 use std::f64;
 use regex::Regex;
-use rustc_serialize::json;
+use serde::{Serialize, Deserialize};
 
 static DEFAULT_SMOOTHING: f64 = 1.0f64;
 
 /// Naive Bayes classifier
-#[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Classifier {
     vocab: HashSet<String>,
     num_examples: u32,
@@ -14,7 +14,7 @@ pub struct Classifier {
     classifications: HashMap<String, Classification>
 }
 
-#[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct Classification {
     label: String,
     num_examples: u32,
@@ -151,12 +151,12 @@ impl Classifier {
 
     /// Encodes the classifier as a JSON string.
     pub fn to_json(&self) -> String {
-        json::encode(self).ok().expect("encoding JSON failed")
+        serde_json::to_string(self).expect("encoding JSON failed")
     }
 
     /// Builds a new classifier from a JSON string
     pub fn from_json(encoded: &str) -> Classifier {
-        let classifier: Classifier = json::decode(encoded).ok().expect("decoding JSON failed");
+        let classifier: Classifier = serde_json::from_str(encoded).expect("decoding JSON failed");
         classifier
     }
 
